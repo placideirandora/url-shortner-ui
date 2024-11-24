@@ -8,6 +8,9 @@ import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import AlertTitle from '@mui/material/AlertTitle';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+
+import { useUrlShortener } from '../../hooks/useUrlShortner';
 
 interface AlertState {
   show: boolean;
@@ -24,13 +27,21 @@ export default function UserInputMask() {
     message: '',
   });
 
+  const { shortenUrl, loading, error } = useUrlShortener();
+
   const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOriginalUrl(event.target.value);
   };
 
-  const handleGoClick = () => {
+  const handleGoClick = async () => {
     if (originalUrl) {
-      setShortenedUrl('https://google.com');
+      const response = await shortenUrl(originalUrl);
+
+      if (response) {
+        setShortenedUrl(`${response.shortenedUrl}`);
+      } else if (error) {
+        showAlert('error', error.message);
+      }
     }
   };
 
@@ -45,7 +56,7 @@ export default function UserInputMask() {
 
     setTimeout(() => {
       setAlert((prev) => ({ ...prev, show: false }));
-    }, 10000);
+    }, 5000);
   };
 
   const handleCloseAlert = () => {
@@ -62,7 +73,6 @@ export default function UserInputMask() {
         );
       } catch (err) {
         console.error('Failed to copy text: ', err);
-
         showAlert(
           'error',
           'Failed to copy URL to clipboard. Please try again.'
@@ -111,9 +121,9 @@ export default function UserInputMask() {
           size="large"
           sx={{ ml: 3 }}
           onClick={handleGoClick}
-          disabled={!originalUrl}
+          disabled={!originalUrl || loading}
         >
-          Go
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Go'}
         </Button>
       </Box>
 
