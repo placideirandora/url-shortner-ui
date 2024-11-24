@@ -1,10 +1,12 @@
-import "./App.css";
-import Button from "@mui/material/Button";
+import './App.css';
+
+import Layout from './components/layout/Layout';
+
 
 function App() {
   return (
     <>
-      <Button variant="contained">Hello, World</Button>
+      <Layout />
     </>
   );
 }
