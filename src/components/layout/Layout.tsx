@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import Navbar from './Navbar';
@@ -37,7 +36,11 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   };
 });
 
-export default function Layout() {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => setOpen(true);
@@ -50,7 +53,7 @@ export default function Layout() {
       <Sidebar open={open} onDrawerClose={handleDrawerClose} />
       <Main open={open}>
         <DrawerHeader />
-        <Typography sx={{ marginBottom: 2 }}>CONTENT</Typography>
+        {children}
       </Main>
     </Box>
   );
