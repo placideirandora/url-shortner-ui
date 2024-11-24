@@ -1,14 +1,28 @@
 import { useState, ChangeEvent } from 'react';
 
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
+import AlertTitle from '@mui/material/AlertTitle';
 import Typography from '@mui/material/Typography';
+
+interface AlertState {
+  show: boolean;
+  type: 'success' | 'error';
+  message: string;
+}
 
 export default function UserInputMask() {
   const [originalUrl, setOriginalUrl] = useState('');
   const [shortenedUrl, setShortenedUrl] = useState('');
+  const [alert, setAlert] = useState<AlertState>({
+    show: false,
+    type: 'success',
+    message: '',
+  });
 
   const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOriginalUrl(event.target.value);
@@ -26,12 +40,33 @@ export default function UserInputMask() {
     }
   };
 
+  const showAlert = (type: 'success' | 'error', message: string) => {
+    setAlert({ show: true, type, message });
+
+    setTimeout(() => {
+      setAlert((prev) => ({ ...prev, show: false }));
+    }, 10000);
+  };
+
+  const handleCloseAlert = () => {
+    setAlert((prev) => ({ ...prev, show: false }));
+  };
+
   const handleCopyClick = async () => {
     if (shortenedUrl) {
       try {
         await navigator.clipboard.writeText(shortenedUrl);
+        showAlert(
+          'success',
+          `URL "${shortenedUrl}" has been copied to clipboard!`
+        );
       } catch (err) {
         console.error('Failed to copy text: ', err);
+
+        showAlert(
+          'error',
+          'Failed to copy URL to clipboard. Please try again.'
+        );
       }
     }
   };
@@ -40,6 +75,17 @@ export default function UserInputMask() {
     <Box
       sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
     >
+      {alert.show && (
+        <Stack sx={{ width: '150%', mb: 3 }}>
+          <Alert severity={alert.type} onClose={handleCloseAlert}>
+            <AlertTitle>
+              {alert.type === 'success' ? 'SUCCESS' : 'ERROR'}
+            </AlertTitle>
+            {alert.message}
+          </Alert>
+        </Stack>
+      )}
+
       <Typography variant="h4" sx={{ mb: 6, textAlign: 'center' }}>
         USER INPUT MASK
       </Typography>
