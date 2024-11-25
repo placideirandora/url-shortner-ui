@@ -1,5 +1,5 @@
-import { useState, useEffect, SyntheticEvent } from 'react';
 import axios from 'axios';
+import { useState, useEffect, SyntheticEvent } from 'react';
 
 import Box from '@mui/material/Box';
 import Edit from '@mui/icons-material/Edit';
@@ -27,6 +27,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AlertDialogContent from '@mui/material/DialogContent';
 import AlertDialogActions from '@mui/material/DialogActions';
 
+import { generateId } from '../../utils/generateId';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 const USERNAME = import.meta.env.VITE_AUTH_USERNAME;
 const PASSWORD = import.meta.env.VITE_AUTH_PASSWORD;
@@ -49,6 +51,12 @@ interface DialogState {
 interface DeleteDialogState {
   open: boolean;
   urlId: string | null;
+}
+
+interface AddDialogState {
+  open: boolean;
+  newId: string;
+  newUrl: string;
 }
 
 const LoadingSkeleton = () => (
@@ -90,9 +98,15 @@ export default function AdminOverview() {
     open: false,
     urlId: null,
   });
+  const [addDialog, setAddDialog] = useState<AddDialogState>({
+    open: false,
+    newId: '',
+    newUrl: '',
+  });
   const [editUrl, setEditUrl] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     const fetchUrls = async () => {
@@ -112,6 +126,55 @@ export default function AdminOverview() {
     };
     fetchUrls();
   }, []);
+
+  const handleAddClick = () => {
+    setAddDialog({
+      open: true,
+      newId: generateId(),
+      newUrl: '',
+    });
+  };
+
+  const handleAddSave = async () => {
+    setIsAdding(true);
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/urls/${addDialog.newId}`,
+        {
+          url: addDialog.newUrl,
+        },
+        {
+          headers: {
+            Authorization: `Basic ${basicAuth}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      setUrls([...urls, response.data]);
+      setAddDialog({ open: false, newId: '', newUrl: '' });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add URL');
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  const handleCloseAddDialog = (
+    _event: SyntheticEvent<unknown>,
+    reason?: string
+  ) => {
+    if (isAdding) return;
+
+    if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+      setAddDialog({ open: false, newId: '', newUrl: '' });
+    }
+  };
+
+  const handleCancelAdd = () => {
+    if (isAdding) return;
+    setAddDialog({ open: false, newId: '', newUrl: '' });
+  };
 
   const handleDeleteClick = (id: string) => {
     setDeleteDialog({ open: true, urlId: id });
@@ -227,6 +290,7 @@ export default function AdminOverview() {
                   variant="contained"
                   startIcon={<AddIcon />}
                   size="small"
+                  onClick={handleAddClick}
                 >
                   Add New
                 </Button>
@@ -277,6 +341,70 @@ export default function AdminOverview() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Add Dialog */}
+      <Dialog
+        open={addDialog.open}
+        onClose={handleCloseAddDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Add New URL</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="ID"
+            type="text"
+            fullWidth
+            value={addDialog.newId}
+            slotProps={{
+              input: {
+                readOnly: true,
+              },
+            }}
+            sx={{
+              mt: 2,
+              '& .MuiInputBase-input': {
+                fontSize: '1.1rem',
+                padding: '14px 14px',
+              },
+            }}
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            label="URL"
+            type="text"
+            fullWidth
+            value={addDialog.newUrl}
+            onChange={(e) =>
+              setAddDialog((prev) => ({ ...prev, newUrl: e.target.value }))
+            }
+            sx={{
+              mt: 2,
+              '& .MuiInputBase-input': {
+                fontSize: '1.1rem',
+                padding: '14px 14px',
+              },
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelAdd} disabled={isAdding}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAddSave}
+            variant="contained"
+            disabled={isAdding || !addDialog.newUrl}
+            startIcon={
+              isAdding ? <CircularProgress size={20} color="inherit" /> : null
+            }
+          >
+            {isAdding ? 'Adding...' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog
