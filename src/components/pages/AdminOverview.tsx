@@ -27,6 +27,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AlertDialogContent from '@mui/material/DialogContent';
 import AlertDialogActions from '@mui/material/DialogActions';
 
+import { useUrl } from '../../hooks/useUrl';
 import { generateId } from '../../utils/generateId';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -87,6 +88,7 @@ const LoadingSkeleton = () => (
 );
 
 export default function AdminOverview() {
+  const { setEditedUrl } = useUrl();
   const [urls, setUrls] = useState<UrlResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -242,6 +244,7 @@ export default function AdminOverview() {
       setUrls(
         urls.map((url) => (url.id === editDialog.url?.id ? response.data : url))
       );
+      setEditedUrl(editUrl);
       setEditDialog({ open: false, url: null });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update URL');

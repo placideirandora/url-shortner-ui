@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -10,6 +10,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { useUrl } from '../../hooks/useUrl';
 import { useUrlShortener } from '../../hooks/useUrlShortner';
 
 interface AlertState {
@@ -19,6 +20,7 @@ interface AlertState {
 }
 
 export default function UserInputMask() {
+  const { editedUrl } = useUrl();
   const [originalUrl, setOriginalUrl] = useState('');
   const [shortenedUrl, setShortenedUrl] = useState('');
   const [alert, setAlert] = useState<AlertState>({
@@ -28,6 +30,12 @@ export default function UserInputMask() {
   });
 
   const { shortenUrl, loading, error } = useUrlShortener();
+
+  useEffect(() => {
+    if (editedUrl) {
+      setOriginalUrl(editedUrl);
+    }
+  }, [editedUrl]);
 
   const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOriginalUrl(event.target.value);
