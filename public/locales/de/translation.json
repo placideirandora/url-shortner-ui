@@ -1,0 +1,41 @@
+{
+  "title": "URL KÜRZER",
+  "admin": {
+    "dashboard": "URL-VERWALTUNGS-DASHBOARD",
+    "addNew": "Neu hinzufügen",
+    "edit": "URL bearbeiten",
+    "confirmDeletion": "Löschung bestätigen",
+    "confirmDeleteMessage": "Sind Sie sicher, dass Sie diese URL löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "noExpiration": "Keine Ablaufzeit",
+    "id": "ID",
+    "url": "URL",
+    "ttl": "TTL (Sekunden)",
+    "created": "Erstellungsdatum",
+    "modified": "Zuletzt geändert"
+  },
+  "user": {
+    "title": "KÜRZEN SIE IHRE URL",
+    "originalUrl": "Original URL",
+    "shortenedUrl": "Gekürzte URL",
+    "test": "Testen",
+    "copy": "Kopieren",
+    "go": "Los"
+  },
+  "common": {
+    "add": "Hinzufügen",
+    "adding": "Füge hinzu...",
+    "cancel": "Abbrechen",
+    "saving": "Speichern...",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "deleting": "Löschen...",
+    "success": "ERFOLG",
+    "error": "FEHLER"
+  },
+  "alerts": {
+    "success": "ERFOLG",
+    "error": "FEHLER",
+    "copySuccess": "URL \"{{url}}\" wurde in die Zwischenablage kopiert!",
+    "copyError": "URL konnte nicht in die Zwischenablage kopiert werden. Bitte versuchen Sie es erneut."
+  }
+}

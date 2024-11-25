@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect, SyntheticEvent } from 'react';
 
 import Box from '@mui/material/Box';
@@ -88,6 +89,7 @@ const LoadingSkeleton = () => (
 );
 
 export default function AdminOverview() {
+  const { t } = useTranslation();
   const { editedUrl, setEditedUrl } = useUrl();
   const [urls, setUrls] = useState<UrlResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -282,7 +284,7 @@ export default function AdminOverview() {
   return (
     <>
       <Typography variant="h4" sx={{ mb: 4 }}>
-        URL MANAGEMENT DASHBOARD
+        {t('admin.title')}
       </Typography>
       <TableContainer component={Paper}>
         <Table>
@@ -295,14 +297,14 @@ export default function AdminOverview() {
                   size="small"
                   onClick={handleAddClick}
                 >
-                  Add New
+                  {t('admin.addNew')}
                 </Button>
               </TableCell>
-              <TableCell>ID</TableCell>
-              <TableCell>URL</TableCell>
-              <TableCell>TTL (seconds)</TableCell>
-              <TableCell>Creation-DateTime</TableCell>
-              <TableCell>Last-Changed-DateTime</TableCell>
+              <TableCell>{t('admin.id')}</TableCell>
+              <TableCell>{t('admin.url')}</TableCell>
+              <TableCell>{t('admin.ttl')}</TableCell>
+              <TableCell>{t('admin.created')}</TableCell>
+              <TableCell>{t('admin.modified')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -337,7 +339,7 @@ export default function AdminOverview() {
                   </TableCell>
                   <TableCell>{url.id}</TableCell>
                   <TableCell>{url.url}</TableCell>
-                  <TableCell>{url.ttlInSeconds ?? 'No expiration'}</TableCell>
+                  <TableCell>{url.ttlInSeconds ?? t('admin.noExpiration')}</TableCell>
                   <TableCell>
                     {new Date(url.createdDate).toLocaleString()}
                   </TableCell>
@@ -358,7 +360,7 @@ export default function AdminOverview() {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Add New URL</DialogTitle>
+        <DialogTitle>{t('admin.addNew')} URL</DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"
@@ -400,7 +402,7 @@ export default function AdminOverview() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelAdd} disabled={isAdding}>
-            Cancel
+          {t('common.cancel')}
           </Button>
           <Button
             onClick={handleAddSave}
@@ -410,7 +412,7 @@ export default function AdminOverview() {
               isAdding ? <CircularProgress size={20} color="inherit" /> : null
             }
           >
-            {isAdding ? 'Adding...' : 'Add'}
+            {isAdding ? t('common.adding') : t('common.add')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -422,7 +424,7 @@ export default function AdminOverview() {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Edit URL</DialogTitle>
+        <DialogTitle>{t('admin.edit')}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -443,7 +445,7 @@ export default function AdminOverview() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelEdit} disabled={isSaving}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleSave}
@@ -453,21 +455,20 @@ export default function AdminOverview() {
               isSaving ? <CircularProgress size={20} color="inherit" /> : null
             }
           >
-            {isSaving ? 'Saving...' : 'Save'}
+            {isSaving ? t('common.saving') : t('common.save')}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialog.open} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogTitle>{t('admin.confirmDeletion')}</DialogTitle>
         <AlertDialogContent>
-          Are you sure you want to delete this URL? This action cannot be
-          undone.
+        {t('admin.confirmDeleteMessage')}
         </AlertDialogContent>
         <AlertDialogActions>
           <Button onClick={handleCancelDelete} disabled={isDeleting}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleConfirmDelete}
@@ -478,7 +479,7 @@ export default function AdminOverview() {
               isDeleting ? <CircularProgress size={20} color="inherit" /> : null
             }
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {isDeleting ? t('common.deleting') : t('common.delete')}
           </Button>
         </AlertDialogActions>
       </AlertDialog>

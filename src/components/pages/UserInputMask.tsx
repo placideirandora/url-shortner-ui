@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect, ChangeEvent } from 'react';
 
 import Box from '@mui/material/Box';
@@ -20,6 +21,7 @@ interface AlertState {
 }
 
 export default function UserInputMask() {
+  const { t } = useTranslation();
   const { editedUrl } = useUrl();
   const [originalUrl, setOriginalUrl] = useState('');
   const [shortenedUrl, setShortenedUrl] = useState('');
@@ -75,16 +77,10 @@ export default function UserInputMask() {
     if (shortenedUrl) {
       try {
         await navigator.clipboard.writeText(shortenedUrl);
-        showAlert(
-          'success',
-          `URL "${shortenedUrl}" has been copied to clipboard!`
-        );
+        showAlert('success', t('alerts.copySuccess', { url: shortenedUrl }));
       } catch (err) {
         console.error('Failed to copy text: ', err);
-        showAlert(
-          'error',
-          'Failed to copy URL to clipboard. Please try again.'
-        );
+        showAlert('error', t('alerts.copyError'));
       }
     }
   };
@@ -97,7 +93,7 @@ export default function UserInputMask() {
         <Stack sx={{ width: '150%', mb: 3 }}>
           <Alert severity={alert.type} onClose={handleCloseAlert}>
             <AlertTitle>
-              {alert.type === 'success' ? 'SUCCESS' : 'ERROR'}
+              {alert.type === 'success' ? t('alerts.success') : t('alerts.error')}
             </AlertTitle>
             {alert.message}
           </Alert>
@@ -105,7 +101,7 @@ export default function UserInputMask() {
       )}
 
       <Typography variant="h4" sx={{ mb: 6, textAlign: 'center' }}>
-        SHORTEN YOUR URL
+        {t('user.title')}
       </Typography>
 
       <Box
@@ -118,7 +114,7 @@ export default function UserInputMask() {
       >
         <TextField
           id="original-url"
-          label="Original URL"
+          label={`${t('user.originalUrl')}`}
           variant="outlined"
           value={originalUrl}
           onChange={handleUrlChange}
@@ -131,7 +127,11 @@ export default function UserInputMask() {
           onClick={handleGoClick}
           disabled={!originalUrl || loading}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : 'Go'}
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            t('user.go')
+          )}
         </Button>
       </Box>
 
@@ -147,7 +147,7 @@ export default function UserInputMask() {
       >
         <TextField
           id="shortened-url"
-          label="Shortened URL"
+          label={`${t('user.shortenedUrl')}`}
           variant="outlined"
           value={shortenedUrl}
           slotProps={{
@@ -164,7 +164,7 @@ export default function UserInputMask() {
           onClick={handleTestClick}
           disabled={!shortenedUrl}
         >
-          Test
+          {t('user.test')}
         </Button>
         <Button
           variant="contained"
@@ -173,7 +173,7 @@ export default function UserInputMask() {
           onClick={handleCopyClick}
           disabled={!shortenedUrl}
         >
-          Copy
+          {t('user.copy')}
         </Button>
       </Box>
     </Box>
