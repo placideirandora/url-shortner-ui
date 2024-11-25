@@ -105,7 +105,7 @@ export default function UserInputMask() {
       )}
 
       <Typography variant="h4" sx={{ mb: 6, textAlign: 'center' }}>
-        USER INPUT MASK
+        SHORTEN YOUR URL
       </Typography>
 
       <Box
