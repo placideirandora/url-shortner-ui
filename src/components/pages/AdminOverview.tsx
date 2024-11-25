@@ -88,7 +88,7 @@ const LoadingSkeleton = () => (
 );
 
 export default function AdminOverview() {
-  const { setEditedUrl } = useUrl();
+  const { editedUrl, setEditedUrl } = useUrl();
   const [urls, setUrls] = useState<UrlResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -310,7 +310,13 @@ export default function AdminOverview() {
               <LoadingSkeleton />
             ) : (
               urls.map((url) => (
-                <TableRow key={url.id}>
+                <TableRow
+                  key={url.id}
+                  sx={{
+                    backgroundColor:
+                      url.url === editedUrl ? '#e3f2fd' : 'inherit',
+                  }}
+                >
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <IconButton
