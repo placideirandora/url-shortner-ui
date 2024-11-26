@@ -121,9 +121,10 @@ export default function AdminOverview() {
             'Content-Type': 'application/json',
           },
         });
-        setUrls(response.data);
+        setUrls(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch URLs');
+        setUrls([]);
       } finally {
         setLoading(false);
       }
@@ -310,7 +311,7 @@ export default function AdminOverview() {
           <TableBody>
             {loading ? (
               <LoadingSkeleton />
-            ) : (
+            ) : Array.isArray(urls) && urls.length > 0 ? (
               urls.map((url) => (
                 <TableRow
                   key={url.id}
@@ -339,7 +340,9 @@ export default function AdminOverview() {
                   </TableCell>
                   <TableCell>{url.id}</TableCell>
                   <TableCell>{url.url}</TableCell>
-                  <TableCell>{url.ttlInSeconds ?? t('admin.noExpiration')}</TableCell>
+                  <TableCell>
+                    {url.ttlInSeconds ?? t('admin.noExpiration')}
+                  </TableCell>
                   <TableCell>
                     {new Date(url.createdDate).toLocaleString()}
                   </TableCell>
@@ -348,6 +351,12 @@ export default function AdminOverview() {
                   </TableCell>
                 </TableRow>
               ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  {t('admin.noData', 'No URLs found')}
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
@@ -402,7 +411,7 @@ export default function AdminOverview() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelAdd} disabled={isAdding}>
-          {t('common.cancel')}
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={handleAddSave}
@@ -464,7 +473,7 @@ export default function AdminOverview() {
       <AlertDialog open={deleteDialog.open} onClose={handleCloseDeleteDialog}>
         <DialogTitle>{t('admin.confirmDeletion')}</DialogTitle>
         <AlertDialogContent>
-        {t('admin.confirmDeleteMessage')}
+          {t('admin.confirmDeleteMessage')}
         </AlertDialogContent>
         <AlertDialogActions>
           <Button onClick={handleCancelDelete} disabled={isDeleting}>
